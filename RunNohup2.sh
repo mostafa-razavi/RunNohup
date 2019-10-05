@@ -1,5 +1,11 @@
 #!bin/bash
 mainCommand=$1
+logFile=$2
+
+if [ "$logFile" == "" ]; then
+	logFile="/dev/null"
+fi
+
 read -p "Do you want to receive an email notification when the job is done? (y/n) " yesORno
 lowerCaseYesOrNo=$(echo "$yesORno" | sed -e 's/\(.*\)/\L\1/')
 if [ "$lowerCaseYesOrNo" == "y" ] || [ "$lowerCaseYesOrNo" == "yes" ]; then
@@ -13,10 +19,10 @@ notification="bash ~/Git/SendMail/SendMail.sh"
 echo
 
 if [ "$lowerCaseYesOrNo" == "y" ] || [ "$lowerCaseYesOrNo" == "yes" ]; then
-	nohup bash -c "  startSeconds=\$(date +%s) && echo \$startSeconds && $mainCommand && endSeconds=\$(date +%s) && duration=\$(echo \(\$endSeconds-\$startSeconds\) | bc) && $notification $email $pass \$duration " > /dev/null 2>&1 &
+	nohup bash -c "  startSeconds=\$(date +%s) && echo \$startSeconds && $mainCommand && endSeconds=\$(date +%s) && duration=\$(echo \(\$endSeconds-\$startSeconds\) | bc) && $notification $email $pass \$duration " > $logFile 2>&1 &
 	echo "Nohup job is running. You will receive an email when the job is done!"
 else
-	nohup $mainCommand > /dev/null 2>&1 &
+	nohup $mainCommand > $logFile 2>&1 &
 	echo "Nohup job is running."
 fi
 
